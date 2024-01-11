@@ -2,7 +2,7 @@ import axios from "./axios";
 
 export const getPizzasRequest = () => axios.post("/", {
     query: `
-    Pizzas{
+    query Pizzas {
         pizzas {
             piz_id
             piz_name
@@ -22,9 +22,9 @@ export const getPizzasRequest = () => axios.post("/", {
 });
 
 export const getPizzaRequest = (id) => axios.post("/", {
-   query: `
-    Pizzas{
-        pizzas(id: ${ id } ) {
+    query: `
+    query Pizzas {
+        pizzas(id: ${id} ) {
             piz_id
             piz_name
             piz_origin
@@ -39,4 +39,6 @@ export const getPizzaRequest = (id) => axios.post("/", {
            }
        }
    }
-`,});
+`,
+});
+
