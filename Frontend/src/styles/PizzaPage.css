@@ -1,0 +1,23 @@
+.btn-search{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.btn{
+    color: white;
+}
+
+.btn-crear{
+    background-color: #79b383;
+    width: 100px;
+}
+
+.search-bar{
+    width: 250px;
+}
+
+.btn-paginate{
+    margin-right: 5px;
+    background-color: #86CB92;
+}

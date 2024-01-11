@@ -4,7 +4,7 @@ const pizzaResolver = {
     Query: {
         pizzas(root, {id}){
             if ( id == undefined) {
-                return db.any('SELECT * FROM pizzas')
+                return db.any('SELECT * FROM pizzas ORDER BY piz_id')
             } else {
                 return db.any('SELECT * FROM pizzas WHERE piz_id = $1', [id])
             }
