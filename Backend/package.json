@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "apollo-server": "^3.13.0",
+    "cors": "^2.8.5",
     "merge-graphql-schemas": "^1.7.8",
     "nodemon": "^3.0.2",
     "pg-promise": "^11.5.4"
