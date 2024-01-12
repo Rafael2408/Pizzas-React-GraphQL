@@ -42,13 +42,11 @@ export const getPizzaRequest = (id) => axios.post("/", {
 `,
 });
 
-export const createPizzaRequest = (data) => {
-    console.log(data)
+export const createPizzaRequest = async (data) => {
     const { piz_name, piz_origin, ingredients } = data;
-    // const ingredients = ingredients.map(ing => `{ ing_id: ${ing.ing_id}, pi_portion: ${ing.pi_portion} }`).join(',');
     const query = `
-    mutation {
-        createPizza(pizza: {piz_name: "${piz_name}", piz_origin: "${piz_origin}", ingredientsPizza: [${ingredients}]}) {
+    mutation CreatePizza($pizza: inputPizza) {
+        createPizza(pizza: $pizza) {
             piz_id
             piz_name
             piz_origin
@@ -61,7 +59,26 @@ export const createPizzaRequest = (data) => {
         }
     }
     `;
-    // Aquí deberías ejecutar tu consulta con axios
+    const variables = {
+        pizza: {
+            piz_name,
+            piz_origin,
+            ingredientsPizza: ingredients
+        }
+    };
+    // Aquí ejecutas tu consulta con axios
+    try {
+        const response = await axios.post('/', {
+            query,
+            variables
+        });
+        return response;
+    } catch (error) {
+        console.error(error);
+    }
 }
+
+
+
 
 

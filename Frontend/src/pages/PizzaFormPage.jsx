@@ -28,8 +28,10 @@ function PizzaFormPage() {
         getIngredients()
     }, [])
 
+    console.log(ingredients)
+
     const onSubmit = handleSubmit((data) => {
-        if(data.ingredient) {
+        if(data.ingredients) {
         // Filtrar los ingredientes para que solo se incluyan si su ing_id es verdadero
             data.ingredients = data.ingredients.filter(ingredient => ingredient.ing_id);
 
@@ -75,21 +77,44 @@ function PizzaFormPage() {
                         <button type="button" className="btn btn-primary" id='btn-ingredients' onClick={() => setShowIngredients(!showIngredients)}>
                             Ingredientes
                         </button>
-                        {showIngredients && ingredients.map((ingredient, index) => (
-                            <div key={index} className='ingredient-row'>
-                                <label className='col-4'>{ingredient.ing_name}:</label>
-                                <input type="checkbox" className='col-1'
-                                    {...register(`ingredients[${index}].ing_id`)}
-                                    value={ingredient.ing_id}
-                                    onChange={e => handleCheckboxChange(index, e.target.checked)}
-                                />
-                                <input type="number" className='form-control porcion'
-                                    min={1}
-                                    {...register(`ingredients[${index}].pi_portion`, { required: selectedIngredients[index] })}
-                                    disabled={!selectedIngredients[index]}
-                                />
-                            </div>
-                        ))}
+                        {showIngredients && (
+                            <table className='table table-striped'>
+                                <thead>
+                                    <tr>
+                                        <th className='text-center'>Nombre</th>
+                                        <th className='text-center'>Seleccionar</th>
+                                        <th className='text-center'>Calorías</th>
+                                        <th className='text-center'>Porción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {ingredients.map((ingredient, index) => (
+                                        <tr key={index}>
+                                            <td className='text-center'>{ingredient.ing_name}</td>
+                                            <td className='text-center'>
+                                                <input type="checkbox"
+                                                    {...register(`ingredients[${index}].ing_id`)}
+                                                    value={ingredient.ing_id}
+                                                    onChange={e => handleCheckboxChange(index, e.target.checked)}
+                                                />
+                                            </td>
+                                            <td className='text-center'>{ingredient.ing_calories}</td>
+                                            <td className='text-center'>
+                                                <input type="number" className='form-control porcion'
+                                                    min={1}
+                                                    {...register(`ingredients[${index}].pi_portion`, { required: selectedIngredients[index] })}
+                                                    disabled={!selectedIngredients[index]}
+                                                />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+
+
+
+
 
 
                         <div className='separar-elementos'>

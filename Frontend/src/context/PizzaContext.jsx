@@ -38,6 +38,7 @@ export const PizzaProvider = ({ children }) => {
 
     const createPizza = async (data) => {
         try {
+            console.log(data)
             const res = await createPizzaRequest(data)
             console.log(res)
         } catch (error) {
