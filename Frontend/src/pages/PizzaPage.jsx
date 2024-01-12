@@ -56,7 +56,9 @@ function PizzaPage() {
                     </td>
                     <td className="text-center">{pizza.total_calories}</td>
                     <td className="text-center">
-                      <button className="btn btn-editar">
+                      <button className="btn btn-editar"
+                        onClick={() => navigate(`/pizza-add/${pizza.piz_id}`)}
+                      >
                         <i className="fas fa-edit"></i> 
                       </button>
                       <button className="btn btn-eliminar">

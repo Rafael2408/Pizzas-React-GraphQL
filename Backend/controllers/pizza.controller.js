@@ -51,7 +51,7 @@ const pizzaResolver = {
                     SET piz_name = $1, piz_origin = $2, piz_state = $3
                     WHERE piz_id = $4
                     RETURNING *;
-                `, [pizza.piz_name, pizza.piz_origin, pizza.piz_state, pizza.piz_id])
+                    `, [pizza.piz_name, pizza.piz_origin, pizza.piz_state, pizza.piz_id])
                     if (pizza.ingredientsPizza.length > 0) {
                         pizza.ingredientsPizza.forEach(async (element) => {
                             await db.none(`

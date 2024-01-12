@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from 'react';
-import { getPizzaRequest, getPizzasRequest, createPizzaRequest } from '../../api/pizzas';
+import { getPizzaRequest, getPizzasRequest, createPizzaRequest, updatePizzaRequest } from '../../api/pizzas';
 import { getIngredientsRequest, getIngredientRequest } from '../../api/ingredients';
 
 export const PizzaContext = createContext();
@@ -29,8 +29,7 @@ export const PizzaProvider = ({ children }) => {
     const getPizzaById = async (id) =>{
         try {
             const res = await getPizzaRequest(id)
-            console.log(res)
-            setPizzas(res.data)
+            setPizzas(res.data.data.pizzas)
         } catch (error) {
             console.log(error)
         }
@@ -38,13 +37,23 @@ export const PizzaProvider = ({ children }) => {
 
     const createPizza = async (data) => {
         try {
-            console.log(data)
             const res = await createPizzaRequest(data)
             console.log(res)
         } catch (error) {
             console.log(error)
         }
     }
+
+    const updatePizza = async (data) => {
+        try {
+            console.log(data)
+            const res = await updatePizzaRequest(data)
+            console.log(res)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
 
     const getIngredients = async () =>{
         try {
@@ -73,6 +82,8 @@ export const PizzaProvider = ({ children }) => {
                 getPizzas,
                 getPizzaById,
                 createPizza,
+                updatePizza,
+
                 ingredients,
                 getIngredients,
                 getIngredientById,

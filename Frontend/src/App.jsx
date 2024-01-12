@@ -15,6 +15,7 @@ function App() {
           <Route path='/' element={<HomePage />} />
           <Route path="/pizza" element={<PizzaPage />} />
           <Route path="/pizza-add" element={<PizzaFormPage />} />
+          <Route path="/pizza-add/:id" element={<PizzaFormPage />} />
         </Routes>
       </Router>
     </PizzaProvider>

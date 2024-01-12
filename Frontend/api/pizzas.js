@@ -78,7 +78,41 @@ export const createPizzaRequest = async (data) => {
     }
 }
 
-
+export const updatePizzaRequest = async (data) => {
+    const { piz_id, piz_name, piz_origin, ingredients } = data;
+    const query = `
+        mutation UpdatePizza($pizza: inputPizza) {
+        updatePizza(pizza: $pizza) {
+            piz_id
+            piz_name
+            piz_origin
+            piz_state
+            ingredients {
+                ing_id
+                ing_name
+                ing_calories
+            }
+        }
+    `;
+    const variables = {
+        pizza: {
+            piz_id,
+            piz_name,
+            piz_origin,
+            ingredientsPizza: ingredients
+        }
+    };
+    // Aquí ejecutas tu consulta con axios
+    try {
+        const response = await axios.post('/', {
+            query,
+            variables
+        });
+        return response
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 
 
