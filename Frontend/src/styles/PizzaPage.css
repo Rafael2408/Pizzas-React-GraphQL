@@ -6,11 +6,12 @@
 
 .btn{
     color: white;
+    font-weight: bold;
 }
 
 .btn-crear{
-    background-color: #79b383;
-    width: 100px;
+    background-color: #3171e7;
+    width: 130px;
 }
 
 .search-bar{
@@ -20,4 +21,65 @@
 .btn-paginate{
     margin-right: 5px;
     background-color: #86CB92;
+    width: 130px;
+}
+
+.btn-editar{
+    margin-right: 5px;
+    background-color: rgb(57, 136, 136);
+}
+.btn-eliminar{
+    background-color: #ee5c5c;
+}
+
+#pizzaForm {
+    background-color: #4b746d;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    max-width: 600px;
+    width: 100%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border-radius: 10px;
+    height: 85vh;
+    /* Ajusta esto a la altura que prefieras */
+    overflow-y: auto;
+    /* Esto habilitará el scroll si el contenido excede la altura */
+}
+
+#pizzaForm form{
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+}
+
+.ingredient-row{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.porcion{
+    width: 20%;
+}
+
+#btn-ingredients{
+    margin-bottom: 10px;
+}
+
+.separar-elementos{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.separar-elementos .btn{
+    width: 48%;
+}
+
+.btn-guardar{
+    background-color: #83c48e;
 }

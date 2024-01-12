@@ -8,6 +8,13 @@ const pizzaResolver = {
             } else {
                 return db.any('SELECT * FROM pizzas WHERE piz_id = $1', [id])
             }
+        },
+        ingredients(root, {id}){
+            if ( id == undefined) {
+                return db.any('SELECT * FROM ingredients ORDER BY ing_id')
+            } else {
+                return db.any('SELECT * FROM ingredients WHERE ing_id = $1', [id])
+            }
         }
     },
     Mutation:{

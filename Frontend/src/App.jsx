@@ -5,6 +5,7 @@ import './styles/all.css';
 import { PizzaProvider } from './context/PizzaContext';
 import PizzaPage from './pages/PizzaPage';
 import HomePage from './pages/HomePage';
+import PizzaFormPage from './pages/PizzaFormPage';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Routes>
           <Route path='/' element={<HomePage />} />
           <Route path="/pizza" element={<PizzaPage />} />
+          <Route path="/pizza-add" element={<PizzaFormPage />} />
         </Routes>
       </Router>
     </PizzaProvider>

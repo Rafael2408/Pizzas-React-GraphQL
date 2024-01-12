@@ -1,10 +1,12 @@
 import { useContext, useEffect, useState } from "react"
 import { PizzaContext } from "../context/PizzaContext"
 import { useForm } from 'react-hook-form'
+import { useNavigate } from "react-router-dom"
 
 import '../styles/PizzaPage.css'
 
 function PizzaPage() {
+  const navigate = useNavigate()
   const { pizzas, getPizzas } = useContext(PizzaContext)
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage,] = useState(5); // Cambia esto al número de elementos que quieres por página
@@ -12,7 +14,6 @@ function PizzaPage() {
   useEffect(() => {
     getPizzas()
   }, [])
-  console.log(pizzas)
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -24,7 +25,11 @@ function PizzaPage() {
         <h1 className="text-center">Administración de Pizzas</h1>
         <div>
           <div className="btn-search">
-            <button className="btn btn-crear">Crear</button>
+            <button className="btn btn-crear"
+              onClick={() => navigate('/pizza-add')}
+            >
+              <i className="fas fa-pencil-alt"></i> Registrar 
+            </button>
             <input className="form-control search-bar" type="search" placeholder="Buscar pizza..." />
           </div>
 
@@ -37,6 +42,7 @@ function PizzaPage() {
                   <th className="text-center">Origen</th>
                   <th className="text-center">Estado</th>
                   <th className="text-center">Calorías Totales</th>
+                  <th className="text-center" colSpan={2}> Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -49,10 +55,19 @@ function PizzaPage() {
                       <input type="checkbox" checked={pizza.piz_state} onChange={() => { }} />
                     </td>
                     <td className="text-center">{pizza.total_calories}</td>
+                    <td className="text-center">
+                      <button className="btn btn-editar">
+                        <i className="fas fa-edit"></i> 
+                      </button>
+                      <button className="btn btn-eliminar">
+                        <i className="fas fa-trash"></i> 
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+
           </div>
           <div className="btn-search">
             <div>

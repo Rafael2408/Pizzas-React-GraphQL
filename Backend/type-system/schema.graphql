@@ -1,5 +1,6 @@
 type Query {
     pizzas(id: Int): [pizzas]
+    ingredients(id: Int): [ingredients]
 }
 
 type Mutation{
