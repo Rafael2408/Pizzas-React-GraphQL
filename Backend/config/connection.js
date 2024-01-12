@@ -1,11 +1,16 @@
 const pgPromise = require('pg-promise')
+const path = require('path');
+const fs = require('fs');
 
 const config = {
-    host: 'localhost',
-    port: '5433',
-    database: 'pizzas',
-    user: 'postgres',
-    password: 'Salsa123'
+    host: "csoft-sei-db.postgres.database.azure.com",
+    user: "dilacrush",
+    password: "rafa1234*",
+    database: "pizza",
+    port: 5432,
+    ssl: {
+        ca: fs.readFileSync(path.resolve(__dirname, 'Ca_cert.pem'))
+    }
 }
 
 const pgp = pgPromise({})

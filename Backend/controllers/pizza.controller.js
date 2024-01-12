@@ -2,19 +2,18 @@ const { db } = require('../config/connection')
 
 const pizzaResolver = {
     Query: {
-        pizzas(root, {id}){
-            if ( id == undefined) {
-                return db.any('SELECT * FROM pizzas ORDER BY piz_id')
-            } else {
-                return db.any('SELECT * FROM pizzas WHERE piz_id = $1', [id])
-            }
+        pizzas(root, { id }) {
+            if (id === undefined) 
+                return db.any('SELECT * FROM pizzas ORDER BY piz_id');
+            else
+                return db.any('SELECT * FROM pizzas WHERE piz_id = $1', [id]);
         },
         ingredients(root, {id}){
-            if ( id == undefined) {
+            if ( id == undefined) 
                 return db.any('SELECT * FROM ingredients ORDER BY ing_id')
-            } else {
+            else 
                 return db.any('SELECT * FROM ingredients WHERE ing_id = $1', [id])
-            }
+            
         }
     },
     Mutation:{
@@ -84,8 +83,58 @@ const pizzaResolver = {
             } catch (error) {
                 console.log({ error: error.message })
             }
-        } 
-    }, 
+        },
+        async createIngredient(root, { ingredient }){
+            try {
+                if (ingredient == undefined) {
+                    return null
+                } else {
+                    const newIngredient = await db.one(`
+                        INSERT INTO ingredients(ing_name, ing_calories, ing_state)
+                        VALUES ($1, $2, $3) returning *;
+                    `, [ingredient.ing_name, ingredient.ing_calories, ingredient.ing_state])
+                    return newIngredient
+                }
+            } catch (error) {
+                console.log({error: error.message})
+            }
+        },
+        async updateIngredient(root, { ingredient }){
+            try{
+                if(ingredient == null){
+                    return null
+                } else {
+                    const newIngredient = await db.one(`
+                        UPDATE public.ingredients
+                        SET ing_name=$2, ing_calories=$3, ing_state=$4
+                        WHERE ing_id=$1 returning *;
+                    `, [ingredient.ing_id, ingredient.ing_name, ingredient.ing_calories, ingredient.ing_state])
+                    return newIngredient
+                }
+            }
+            catch(error){
+                console.log({error: error.message})
+            }
+        },
+        async deleteIngredient(root, { ing_id }){
+            try {
+                if (ing_id == undefined) {
+                    return null
+                } else {
+                    await db.none(`
+                        DELETE FROM pizzas_ingredients WHERE ing_id = $1;
+                        DELETE FROM ingredients WHERE ing_id = $1;
+                    `, [ing_id]) 
+                    return {
+                        ing_id: ing_id,
+                        message: `Ingredient with id ${ing_id} was deleted successfully`
+                    }
+                }
+            } catch (error) {
+                console.log({ error: error.message })
+            }
+        }
+    },
     pizzas: {
         ingredients(pizza) { 
             return db.any(`
@@ -108,6 +157,19 @@ const pizzaResolver = {
             if (res.total_calories == null) res.total_calories = 0;
 
             return res.total_calories
+        }
+    },
+    ingredients: {
+        pizzas(ingredient) {
+            return db.any(`
+                SELECT p.*, pi.pi_portion
+                FROM ingredients i
+                JOIN pizzas_ingredients pi
+                    ON i.ing_id = pi.piz_id
+                JOIN pizzas p
+                    ON pi.piz_id = p.piz_id
+                WHERE pi.ing_id = $1
+            `, [ingredient.ing_id])
         }
     }
 }
