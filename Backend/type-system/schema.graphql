@@ -2,16 +2,14 @@ type Query {
     pizzas(id: Int): [pizzas]
     ingredients(id: Int): [ingredients]
 }
-
 type Mutation{
     createPizza (pizza: inputPizza): pizzas,
     updatePizza (pizza: updatePizza): pizzas,
-    deletePizza (piz_id: Int): deletePizzaResponse
-}
+    deletePizza (piz_id: Int): deletePizzaResponse,
 
-type deletePizzaResponse {
-    piz_id: Int!,
-    message: String!
+    createIngredient (ingredient: inputIngredient): ingredients,
+    updateIngredient (ingredient: updateIngredient): ingredients,
+    deleteIngredient (ing_id: Int): deleteIngredientResponse
 }
 
 type pizzas {
@@ -21,14 +19,15 @@ type pizzas {
     piz_state: Boolean!,
     total_calories: Float!,
     ingredients: [ingredients]
+    pi_portion: Float
 }
-
 type ingredients {
     ing_id: Int!,
     ing_name: String!,
     ing_calories: Float!,
     ing_state: Boolean!,
     pi_portion: Float!,
+    pizzas: [pizzas]
 }
 
 input inputPizza {
@@ -36,20 +35,41 @@ input inputPizza {
     piz_origin: String!,
     ingredientsPizza: [ingredientPortion]
 }
-
 input ingredientPortion{
     ing_id: Int!,
     pi_portion: Float!
 }
-
 input updatePizza {
     piz_id: Int!,
-    piz_name: String,
-    piz_origin: String,
-    piz_state: Boolean,
+    piz_name: String!,
+    piz_origin: String!,
+    piz_state: Boolean!,
     ingredientsPizza: [ingredientPortion]
 }
-
 input deletePizza {
     piz_id: Int!
 }
+type deletePizzaResponse {
+    piz_id: Int!,
+    message: String!
+}
+
+input inputIngredient{
+    ing_name: String!,
+    ing_calories: Float!,
+    ing_state: Boolean!
+}
+input updateIngredient{
+    ing_id: Int!,
+    ing_name: String,
+    ing_calories: Float,
+    ing_state: Boolean,
+}
+input deleteIngredient{
+    ing_id: Int!
+}
+type deleteIngredientResponse {
+    ing_id: Int!
+    message: String!
+}
+
