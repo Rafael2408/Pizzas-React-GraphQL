@@ -2,19 +2,18 @@ const { db } = require('../config/connection')
 
 const pizzaResolver = {
     Query: {
-        pizzas(root, {id}){
-            if ( id == undefined) {
-                return db.any('SELECT * FROM pizzas ORDER BY piz_id')
-            } else {
-                return db.any('SELECT * FROM pizzas WHERE piz_id = $1', [id])
-            }
+        pizzas(root, { id }) {
+            if (id === undefined) 
+                return db.any('SELECT * FROM pizzas ORDER BY piz_id');
+            else
+                return db.any('SELECT * FROM pizzas WHERE piz_id = $1', [id]);
         },
         ingredients(root, {id}){
-            if ( id == undefined) {
+            if ( id == undefined) 
                 return db.any('SELECT * FROM ingredients ORDER BY ing_id')
-            } else {
+            else 
                 return db.any('SELECT * FROM ingredients WHERE ing_id = $1', [id])
-            }
+            
         }
     },
     Mutation:{

@@ -1,8 +1,8 @@
 const { ApolloServer } = require('apollo-server')
-const { fileLoader, mergeTypes,  } = require('merge-graphql-schemas')
+const { fileLoader, mergeTypes} = require('merge-graphql-schemas')
+const resolvers = require('./controllers/pizza.controller')
 
 const typeDefs = mergeTypes(fileLoader('./type-system/schema.graphql'))
-const resolvers = require('./controllers/pizza.controller')
 
 const server = new ApolloServer({
     typeDefs,
@@ -14,8 +14,6 @@ const server = new ApolloServer({
         credentials: true
     }
 })
-
-
 
 server.listen(4000).then(({ url }) => {
     console.log(`🚀  Server running in the URL: ${url}`)
