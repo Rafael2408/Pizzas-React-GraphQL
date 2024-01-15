@@ -48,23 +48,38 @@ function PizzaFormPage() {
     }, [])
 
     useEffect(() => {
-        setValue('piz_name', pizzas[0].piz_name);
-        setValue('piz_origin', pizzas[0].piz_origin);
+        if (pizzas && pizzas.length > 0) {
+            setValue('piz_name', pizzas[0].piz_name);
+            setValue('piz_origin', pizzas[0].piz_origin);
 
-        // Obtener los ingredientes seleccionados para esta pizza
-        const pizzaIngredients = selectedIngredients || {};
+            // Obtener los ingredientes seleccionados para esta pizza
+            const pizzaIngredients = selectedIngredients || {};
 
-        // Iterar sobre los ingredientes de la pizza
-        pizzas[0].ingredients.forEach((ingredient, index) => {
-            // Si el ingrediente ha sido seleccionado, establecer su valor
-            if (pizzaIngredients[index]) {
-                setValue(`ingredients[${index}].ing_id`, ingredient.ing_id);
-                setValue(`ingredients[${index}].pi_portion`, ingredient.pi_portion);
-            }
-        });
+            // Iterar sobre los ingredientes de la pizza
+            pizzas[0].ingredients.forEach((ingredient, index) => {
+                // Si el ingrediente ha sido seleccionado, establecer su valor
+                if (pizzaIngredients[index]) {
+                    setValue(`ingredients[${index}].ing_id`, ingredient.ing_id);
+                    setValue(`ingredients[${index}].pi_portion`, ingredient.pi_portion);
+                }
+            });
+        }
     }, [pizzas, selectedIngredients]);
 
-    const onSubmit = handleSubmit((data) => {
+    useEffect(() => {
+        getIngredients()
+        if (params.id) {
+            getPizzaById(params.id)
+        } else {
+            // Estás creando una nueva pizza, resetea el estado del formulario
+            setValue('piz_name', '');
+            setValue('piz_origin', '');
+            setSelectedIngredients({});
+        }
+    }, [params.id])
+
+
+    const onSubmit = handleSubmit(async (data) => {
         if (data.ingredients) {
             // Filtrar los ingredientes para que solo se incluyan si su ing_id es verdadero
             data.ingredients = data.ingredients.filter(ingredient => ingredient.ing_id);
@@ -80,13 +95,15 @@ function PizzaFormPage() {
 
         if (params.id) {
             data.piz_id = parseInt(params.id)
-            updatePizza(data)
+            data.piz_state = pizzas[0].piz_state
+            await updatePizza(data)
         }
         else {
-            createPizza(data)
+            await createPizza(data)
         }
         navigate('/pizza')
     });
+
 
     return (
         <>
@@ -95,7 +112,7 @@ function PizzaFormPage() {
                 <div className='col-6' id='pizzaForm'>
                     <h1>Formulario de Pizzas</h1>
                     <form onSubmit={onSubmit}>
-                        {params.id && (
+                        {params.id && pizzas && pizzas.length > 0 && (
                             <h4>ID de la pizza: {pizzas[0].piz_id}</h4>
                         )}
 
@@ -111,6 +128,23 @@ function PizzaFormPage() {
                                 {...register('piz_origin', { required: true })}
                             />
                         </div>
+                        {params.id && pizzas && pizzas.length > 0 && (
+                            <div className='mb-3 piz_state' >
+                                <label>Estado de la pizza:</label>
+                                {pizzas[0].piz_state ? (
+                                    <>
+                                        <p>Activa</p>
+                                        <button className='btn btn-danger' type="button" onClick={() => handleStateChange(false)}>Desactivar</button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <p>Inactiva</p>
+                                        <button className='btn btn-success' type="button" onClick={() => handleStateChange(true)}>Activar</button>
+                                    </>
+                                )}
+                            </div>
+                        )}
+
                         <button type="button" className="btn btn-primary" id='btn-ingredients' onClick={handleIngredientsClick}>
                             Ingredientes
                         </button>

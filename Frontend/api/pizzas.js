@@ -79,26 +79,30 @@ export const createPizzaRequest = async (data) => {
 }
 
 export const updatePizzaRequest = async (data) => {
-    const { piz_id, piz_name, piz_origin, ingredients } = data;
+    const { piz_id, piz_name, piz_origin, piz_state, ingredients } = data;
+    console.log(data)
     const query = `
-        mutation UpdatePizza($pizza: inputPizza) {
-        updatePizza(pizza: $pizza) {
-            piz_id
-            piz_name
-            piz_origin
-            piz_state
-            ingredients {
-                ing_id
-                ing_name
-                ing_calories
+        mutation UpdatePizza($pizza: updatePizza) {
+            updatePizza(pizza: $pizza) {
+                piz_id
+                piz_name
+                piz_origin
+                piz_state
+                ingredients {
+                    ing_id
+                    ing_name
+                    ing_calories
+                }
             }
         }
     `;
+
     const variables = {
         pizza: {
             piz_id,
             piz_name,
             piz_origin,
+            piz_state,
             ingredientsPizza: ingredients
         }
     };

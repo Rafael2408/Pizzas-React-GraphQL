@@ -43,27 +43,31 @@ const pizzaResolver = {
         async updatePizza(root, { pizza }) {
             try {
                 if (pizza == undefined) {
-                    return null
+                    return null;
                 } else {
                     const updatedPizza = await db.one(`
-                    UPDATE pizzas 
-                    SET piz_name = $1, piz_origin = $2, piz_state = $3
-                    WHERE piz_id = $4
-                    RETURNING *;
-                    `, [pizza.piz_name, pizza.piz_origin, pizza.piz_state, pizza.piz_id])
+                        UPDATE pizzas 
+                        SET piz_name = $1, piz_origin = $2, piz_state = $3
+                        WHERE piz_id = $4
+                        RETURNING *;
+                    `, [pizza.piz_name, pizza.piz_origin, pizza.piz_state, pizza.piz_id]);
+
+                    await db.none(`
+                        DELETE FROM pizzas_ingredients WHERE piz_id = $1;
+                    `, [updatedPizza.piz_id]);
+
                     if (pizza.ingredientsPizza.length > 0) {
-                        pizza.ingredientsPizza.forEach(async (element) => {
+                        for (const element of pizza.ingredientsPizza) {
                             await db.none(`
-                            UPDATE pizzas_ingredients 
-                            SET pi_portion = $1
-                            WHERE piz_id = $2 AND ing_id = $3;
-                        `, [element.pi_portion, updatedPizza.piz_id, element.ing_id])
-                        });
+                                INSERT INTO pizzas_ingredients (piz_id, ing_id, pi_portion)
+                                VALUES ($1, $2, $3);
+                            `, [updatedPizza.piz_id, element.ing_id, element.pi_portion]);
+                        }
                     }
-                    return updatedPizza 
+                    return updatedPizza;
                 }
             } catch (error) {
-                console.log({ error: error.message })
+                console.log({ error: error.message });
             }
         },
         async deletePizza(root, { piz_id }) { 
