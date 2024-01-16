@@ -73,6 +73,7 @@ const pizzaResolver = {
         async deletePizza(root, { piz_id }) { 
             try {
                 if (piz_id == undefined) {
+                    console.log(piz_id)
                     return null
                 } else {
                     await db.none(`
@@ -90,13 +91,13 @@ const pizzaResolver = {
         },
         async createIngredient(root, { ingredient }){
             try {
-                if (ingredient == undefined) {
+                if (ingredient == undefined) { 
                     return null
                 } else {
                     const newIngredient = await db.one(`
                         INSERT INTO ingredients(ing_name, ing_calories, ing_state)
-                        VALUES ($1, $2, $3) returning *;
-                    `, [ingredient.ing_name, ingredient.ing_calories, ingredient.ing_state])
+                        VALUES ($1, $2, true) returning *;
+                    `, [ingredient.ing_name, ingredient.ing_calories])
                     return newIngredient
                 }
             } catch (error) {

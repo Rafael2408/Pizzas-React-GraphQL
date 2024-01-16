@@ -66,7 +66,7 @@ export const createPizzaRequest = async (data) => {
             ingredientsPizza: ingredients
         }
     };
-    // Aquí ejecutas tu consulta con axios
+
     try {
         const response = await axios.post('/', {
             query,
@@ -80,7 +80,6 @@ export const createPizzaRequest = async (data) => {
 
 export const updatePizzaRequest = async (data) => {
     const { piz_id, piz_name, piz_origin, piz_state, ingredients } = data;
-    console.log(data)
     const query = `
         mutation UpdatePizza($pizza: updatePizza) {
             updatePizza(pizza: $pizza) {
@@ -106,7 +105,7 @@ export const updatePizzaRequest = async (data) => {
             ingredientsPizza: ingredients
         }
     };
-    // Aquí ejecutas tu consulta con axios
+
     try {
         const response = await axios.post('/', {
             query,
@@ -118,5 +117,29 @@ export const updatePizzaRequest = async (data) => {
     }
 }
 
+export const deletePizzaRequest = async (piz_id) => {
+    console.log(piz_id)
+    const query = `
+        mutation DeletePizza($pizId: Int) {
+            deletePizza(piz_id: $pizId) {
+                piz_id
+                message
+            }
+        }
+    `;
 
+    const variables = {
+        pizId: piz_id
+    };
+
+    try {
+        const response = await axios.post('/', {
+            query,
+            variables
+        });
+        return response;
+    } catch (error) {
+        console.log(error)
+    }
+} 
 

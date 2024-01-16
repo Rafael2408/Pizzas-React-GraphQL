@@ -33,7 +33,7 @@
 }
 
 #pizzaForm {
-    background-color: #4b746d;
+    background-color: #f8ad6f;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     max-width: 600px;
     width: 100%;
@@ -44,12 +44,34 @@
     padding: 20px;
     border-radius: 10px;
     height: 85vh;
-    /* Ajusta esto a la altura que prefieras */
     overflow-y: auto;
     /* Esto habilitará el scroll si el contenido excede la altura */
 }
 
+#ingredientForm{
+    background-color: #f8ad6f;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    max-width: 600px;
+    width: 100%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border-radius: 10px;
+    height: 50vh;
+    overflow-y: auto;
+    /* Esto habilitará el scroll si el contenido excede la altura */
+
+}
+
 #pizzaForm form{
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+}
+
+#ingredientForm form{
     width: 75%;
     display: flex;
     flex-direction: column;
@@ -82,15 +104,20 @@
 }
 
 .btn-guardar{
-    background-color: #83c48e;
+    background-color: #45bd59;
 }
 
 .piz_state{
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-top: 10px;
+}
+.piz_state h5{
+    font-weight: bold;
 }
 
 label{
     font-weight: bold;
+    font-size: 110%;
 }

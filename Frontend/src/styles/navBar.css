@@ -1,0 +1,13 @@
+.navbar{
+    background-color: #f8b86f !important; 
+    box-shadow: 0 5px 5px rgba(0,0,0,.2);
+}
+
+.navbar a{
+    color: #fff !important;
+}
+
+.active{
+    font-weight: bold !important;
+}
+

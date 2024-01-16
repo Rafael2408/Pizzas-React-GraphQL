@@ -7,8 +7,8 @@ function PizzaFormPage() {
     const navigate = useNavigate()
     const params = useParams()
 
-    const { register, handleSubmit, setValue } = useForm()
-    const { ingredients, getIngredients, pizzas, createPizza, updatePizza, getPizzaById } = usePizzas()
+    const { register, handleSubmit, setValue, formState: { errors } } = useForm()
+    const { ingredients, getIngredients, pizzas = [], createPizza, updatePizza, getPizzaById } = usePizzas()
     const [showIngredients, setShowIngredients] = useState(false);
     const [selectedIngredients, setSelectedIngredients] = useState({});
 
@@ -19,24 +19,27 @@ function PizzaFormPage() {
         }));
 
         if (checked) {
-            setValue(`ingredients[${index}].pi_portion`, ingredients[index].ing_calories);
+            setValue(`ingredients[${index}].pi_portion`, 1);
         }
         else setValue(`ingredients[${index}].pi_portion`, '');
     }
 
     const handleIngredientsClick = () => {
+
         setShowIngredients(!showIngredients);
         if (!showIngredients) {
-            ingredients.forEach((ingredient, index) => {
-                const ingredientInPizza = pizzas[0].ingredients.find(i => i.ing_id === ingredient.ing_id);
-                if (ingredientInPizza) {
-                    handleCheckboxChange(index, true);
-                    setValue(`ingredients[${index}].pi_portion`, ingredientInPizza.pi_portion);
-                } else {
-                    handleCheckboxChange(index, false);
-                    setValue(`ingredients[${index}].pi_portion`, '');
-                }
-            });
+            if(pizzas.length > 0) {
+                ingredients.forEach((ingredient, index) => {
+                    const ingredientInPizza = pizzas[0].ingredients.find(i => i.ing_id === ingredient.ing_id);
+                    if (ingredientInPizza) {
+                        handleCheckboxChange(index, true);
+                        setValue(`ingredients[${index}].pi_portion`, ingredientInPizza.pi_portion);
+                    } else {
+                        handleCheckboxChange(index, false);
+                        setValue(`ingredients[${index}].pi_portion`, '');
+                    }
+                });
+            }
         }
     }
 
@@ -48,7 +51,7 @@ function PizzaFormPage() {
     }, [])
 
     useEffect(() => {
-        if (pizzas && pizzas.length > 0) {
+        if (pizzas && pizzas.length > 0 && params.id !== undefined) {
             setValue('piz_name', pizzas[0].piz_name);
             setValue('piz_origin', pizzas[0].piz_origin);
 
@@ -67,10 +70,7 @@ function PizzaFormPage() {
     }, [pizzas, selectedIngredients]);
 
     useEffect(() => {
-        getIngredients()
-        if (params.id) {
-            getPizzaById(params.id)
-        } else {
+        if (!params.id) {
             // Estás creando una nueva pizza, resetea el estado del formulario
             setValue('piz_name', '');
             setValue('piz_origin', '');
@@ -78,17 +78,14 @@ function PizzaFormPage() {
         }
     }, [params.id])
 
-
     const onSubmit = handleSubmit(async (data) => {
         if (data.ingredients) {
-            // Filtrar los ingredientes para que solo se incluyan si su ing_id es verdadero
             data.ingredients = data.ingredients.filter(ingredient => ingredient.ing_id);
 
-            // Convertir los valores verdaderos en enteros
             data.ingredients.forEach(ingredient => {
                 ingredient.ing_id = parseInt(ingredient.ing_id);
                 if (ingredient.pi_portion) {
-                    ingredient.pi_portion = parseInt(ingredient.pi_portion);
+                    ingredient.pi_portion = parseFloat(ingredient.pi_portion);
                 }
             });
         }
@@ -119,28 +116,35 @@ function PizzaFormPage() {
                         <div className='mb-3'>
                             <label>Nombre de la pizza:</label>
                             <input type="text" placeholder='Nombre de la pizza...' className='form-control'
-                                {...register('piz_name', { required: true })}
+                                {...register('piz_name', { 
+                                    required: 'El nombre de la pizza es requerido',
+                                    minLength: { value: 3, message: 'El nombre debe tener al menos 3 caracteres'}
+                                 })}  
                             />
+                            {errors.piz_name && (
+                                <span className='text-danger'>{errors.piz_name.message}</span>
+                            )}
                         </div>
+
                         <div className='mb-3'>
                             <label>Origen de la pizza:</label>
                             <input type="text" placeholder='Origen de la pizza...' className='form-control'
-                                {...register('piz_origin', { required: true })}
+                                {...register('piz_origin', { 
+                                    required: 'El origen de la pizza es requerido', 
+                                    minLength: { value: 3, message: 'El origen debe tener al menos 3 caracteres'}
+                                })}
                             />
+                            {errors.piz_origin && (
+                                <span className='text-danger'>{errors.piz_origin.message}</span>
+                            )}
                         </div>
                         {params.id && pizzas && pizzas.length > 0 && (
                             <div className='mb-3 piz_state' >
                                 <label>Estado de la pizza:</label>
                                 {pizzas[0].piz_state ? (
-                                    <>
-                                        <p>Activa</p>
-                                        <button className='btn btn-danger' type="button" onClick={() => handleStateChange(false)}>Desactivar</button>
-                                    </>
+                                        <h5>Activa</h5>
                                 ) : (
-                                    <>
-                                        <p>Inactiva</p>
-                                        <button className='btn btn-success' type="button" onClick={() => handleStateChange(true)}>Activar</button>
-                                    </>
+                                        <h5>Inactiva</h5>
                                 )}
                             </div>
                         )}
@@ -163,20 +167,31 @@ function PizzaFormPage() {
                                         <tr key={index}>
                                             <td className='text-center'>{ingredient.ing_name}</td>
                                             <td className='text-center'>
-                                                <input type="checkbox"
-                                                    {...register(`ingredients[${index}].ing_id`)}
-                                                    value={ingredient.ing_id}
-                                                    defaultChecked={selectedIngredients[index]}
-                                                    onChange={e => handleCheckboxChange(index, e.target.checked)}
-                                                />
+                                                <div className='form-check- form-switch'>
+                                                    <input type="checkbox"
+                                                        className='form-check-input'
+                                                        {...register(`ingredients[${index}].ing_id`)}
+                                                        value={ingredient.ing_id}
+                                                        defaultChecked={selectedIngredients[index]}
+                                                        onChange={e => handleCheckboxChange(index, e.target.checked)}
+                                                    />
+                                                </div>
                                             </td>
                                             <td className='text-center'>{ingredient.ing_calories}</td>
                                             <td className='text-center'>
-                                                <input type="number" className='form-control porcion'
-                                                    min={1}
-                                                    {...register(`ingredients[${index}].pi_portion`, { required: selectedIngredients[index] })}
+                                                <input type="text" placeholder='Porción..' className='form-control'
+                                                    {...register(`ingredients[${index}].pi_portion`, {
+                                                        required: selectedIngredients[index],
+                                                        pattern: {
+                                                            value: /^\d+(\.\d{1,2})?$/,
+                                                            message: 'Por favor ingresa un número válido'
+                                                        }
+                                                    })}
                                                     disabled={!selectedIngredients[index]}
                                                 />
+                                                {errors.ingredients && errors.ingredients[index] && errors.ingredients[index].pi_portion && (
+                                                    <span className='text-danger'>{errors.ingredients[index].pi_portion.message}</span>
+                                                )}
                                             </td>
                                         </tr>
                                     ))}

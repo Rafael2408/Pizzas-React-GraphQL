@@ -7,13 +7,41 @@ import '../styles/PizzaPage.css'
 
 function PizzaPage() {
   const navigate = useNavigate()
-  const { pizzas, getPizzas } = useContext(PizzaContext)
+  const { pizzas, getPizzas, updatePizza, deletePizza } = useContext(PizzaContext)
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage,] = useState(5); // Cambia esto al número de elementos que quieres por página
+  const [isLoading, setIsLoading] = useState(false); // Nuevo estado para la carga
+
+  useEffect(() => {
+    const fetchPizzas = async () => {
+      setIsLoading(true); // Inicia la carga
+      await getPizzas();
+      setIsLoading(false); // Termina la carga
+    };
+
+    fetchPizzas();
+  }, [])
 
   useEffect(() => {
     getPizzas()
   }, [])
+
+  const updateState = async (pizza) => {
+    const updatedPizza = {
+      ...pizza,
+      piz_state: !pizza.piz_state,
+      ingredients: pizza.ingredients.map(({ ing_id, pi_portion }) => ({ ing_id, pi_portion }))
+    };
+
+    await updatePizza(updatedPizza);
+
+    getPizzas();
+  }
+
+  const handleDeletePizza = async (piz_id) => {
+    await deletePizza(parseInt(piz_id))
+    getPizzas()
+  }
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -28,49 +56,61 @@ function PizzaPage() {
             <button className="btn btn-crear"
               onClick={() => navigate('/pizza-add')}
             >
-              <i className="fas fa-pencil-alt"></i> Registrar 
+              <i className="fas fa-pencil-alt"></i> Registrar
             </button>
             <input className="form-control search-bar" type="search" placeholder="Buscar pizza..." />
           </div>
 
-          <div className="table-responsive">
-            <table className="table table-striped">
-              <thead>
-                <tr>
-                  <th className="text-center">ID</th>
-                  <th className="text-center">Nombre</th>
-                  <th className="text-center">Origen</th>
-                  <th className="text-center">Estado</th>
-                  <th className="text-center">Calorías Totales</th>
-                  <th className="text-center" colSpan={2}> Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentItems && currentItems.map((pizza) => (
-                  <tr key={pizza.piz_id}>
-                    <td className="text-center">{pizza.piz_id}</td>
-                    <td className="text-center">{pizza.piz_name}</td>
-                    <td className="text-center">{pizza.piz_origin}</td>
-                    <td className="text-center">
-                      <input type="checkbox" checked={pizza.piz_state} onChange={() => { }} />
-                    </td>
-                    <td className="text-center">{pizza.total_calories}</td>
-                    <td className="text-center">
-                      <button className="btn btn-editar"
-                        onClick={() => navigate(`/pizza-add/${pizza.piz_id}`)}
-                      >
-                        <i className="fas fa-edit"></i> 
-                      </button>
-                      <button className="btn btn-eliminar">
-                        <i className="fas fa-trash"></i> 
-                      </button>
-                    </td>
+          {isLoading ? (
+            <p>Cargando pizzas...</p>
+          ) : (
+            <div className="table-responsive">
+              <table className="table table-striped">
+                <thead>
+                  <tr>
+                    <th className="text-center">ID</th>
+                    <th className="text-center">Nombre</th>
+                    <th className="text-center">Origen</th>
+                    <th className="text-center">Estado</th>
+                    <th className="text-center">Calorías Totales</th>
+                    <th className="text-center" colSpan={2}> Acciones</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {currentItems && currentItems.map((pizza) => (
+                    <tr key={pizza.piz_id}>
+                      <td className="text-center">{pizza.piz_id}</td>
+                      <td className="text-center">{pizza.piz_name}</td>
+                      <td className="text-center">{pizza.piz_origin}</td>
+                      <td className="text-center">
+                        <div className="form-check form-switch d-flex justify-content-center">
+                          <input className="form-check-input" type="checkbox" checked={pizza.piz_state} onChange={() => { updateState(pizza) }} />
+                        </div>
+                      </td>
+                      <td className="text-center">{pizza.total_calories}</td>
+                      <td className="text-center">
+                        <button className="btn btn-editar"
+                          onClick={() => navigate(`/pizza-add/${pizza.piz_id}`)}
+                        >
+                          <i className="fas fa-edit"></i>
+                        </button>
+                        <button className="btn btn-eliminar"
+                          onClick={() => {
+                            handleDeletePizza(pizza.piz_id)
+                          }}
+                        >
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
-          </div>
+            </div>
+          )
+          }
+
           <div className="btn-search">
             <div>
               <h5>Mostrando {indexOfFirstItem + 1} - {indexOfLastItem > pizzas.length ? pizzas.length : indexOfLastItem} de {pizzas.length} resultados</h5>

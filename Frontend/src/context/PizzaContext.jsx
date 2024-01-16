@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from 'react';
-import { getPizzaRequest, getPizzasRequest, createPizzaRequest, updatePizzaRequest } from '../../api/pizzas';
-import { getIngredientsRequest, getIngredientRequest } from '../../api/ingredients';
+import { getPizzaRequest, getPizzasRequest, createPizzaRequest, updatePizzaRequest, deletePizzaRequest } from '../../api/pizzas';
+import { getIngredientsRequest, getIngredientRequest, createIngredientRequest, updateIngredientRequest, deleteIngredientRequest } from '../../api/ingredients';
 
 export const PizzaContext = createContext();
 
@@ -54,6 +54,15 @@ export const PizzaProvider = ({ children }) => {
         }
     }
 
+    const deletePizza = async (piz_id) => {
+        try {
+            const res = await deletePizzaRequest(piz_id)
+            console.log(res)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
 
     const getIngredients = async () =>{
         try {
@@ -67,13 +76,38 @@ export const PizzaProvider = ({ children }) => {
     const getIngredientById = async (id) => {
         try {
             const res = await getIngredientRequest(id)
-            setIngredients(res.data)
+            setIngredients(res.data.data.ingredients)
         } catch (error) {
             console.log(error)
         }
     }
 
-    
+    const createIngredient = async (data) => {
+        try {
+            const res = await createIngredientRequest(data)
+            console.log(res)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const updateIngredient = async (data) => {
+        try {
+            const res = await updateIngredientRequest(data)
+            console.log(res)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const deleteIngredient = async (ing_id) =>{
+        try {
+            const res = await deleteIngredientRequest(ing_id)
+            console.log(res)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     return (
         <PizzaContext.Provider 
@@ -83,10 +117,14 @@ export const PizzaProvider = ({ children }) => {
                 getPizzaById,
                 createPizza,
                 updatePizza,
+                deletePizza,
 
                 ingredients,
                 getIngredients,
                 getIngredientById,
+                createIngredient,
+                updateIngredient,
+                deleteIngredient
             }}>
             {children}
         </PizzaContext.Provider>

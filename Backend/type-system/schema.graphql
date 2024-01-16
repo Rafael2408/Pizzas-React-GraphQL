@@ -57,7 +57,6 @@ type deletePizzaResponse {
 input inputIngredient{
     ing_name: String!,
     ing_calories: Float!,
-    ing_state: Boolean!
 }
 input updateIngredient{
     ing_id: Int!,
