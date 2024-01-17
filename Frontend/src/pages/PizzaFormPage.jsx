@@ -55,12 +55,9 @@ function PizzaFormPage() {
             setValue('piz_name', pizzas[0].piz_name);
             setValue('piz_origin', pizzas[0].piz_origin);
 
-            // Obtener los ingredientes seleccionados para esta pizza
             const pizzaIngredients = selectedIngredients || {};
 
-            // Iterar sobre los ingredientes de la pizza
             pizzas[0].ingredients.forEach((ingredient, index) => {
-                // Si el ingrediente ha sido seleccionado, establecer su valor
                 if (pizzaIngredients[index]) {
                     setValue(`ingredients[${index}].ing_id`, ingredient.ing_id);
                     setValue(`ingredients[${index}].pi_portion`, ingredient.pi_portion);
@@ -71,7 +68,6 @@ function PizzaFormPage() {
 
     useEffect(() => {
         if (!params.id) {
-            // Estás creando una nueva pizza, resetea el estado del formulario
             setValue('piz_name', '');
             setValue('piz_origin', '');
             setSelectedIngredients({});
@@ -205,7 +201,7 @@ function PizzaFormPage() {
                             </button>
                             <button type="button" className="btn btn-danger"
                                 onClick={() => navigate('/pizza')}
-                            > Cancelar </button>
+                            > <i className="fas fa-undo"></i> Cancelar </button>
                         </div>
                     </form>
                 </div>

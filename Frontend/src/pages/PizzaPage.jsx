@@ -7,24 +7,37 @@ import '../styles/PizzaPage.css'
 
 function PizzaPage() {
   const navigate = useNavigate()
-  const { pizzas, getPizzas, updatePizza, deletePizza } = useContext(PizzaContext)
+  const { pizzas, setPizzas, getPizzas, updatePizza, deletePizza } = useContext(PizzaContext)
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage,] = useState(5); // Cambia esto al número de elementos que quieres por página
-  const [isLoading, setIsLoading] = useState(false); // Nuevo estado para la carga
+  const [itemsPerPage,] = useState(5); 
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchValue, setSearchValue] = useState('')
+  const [selectedPizzas, setSelectedPizzas] = useState([])
 
   useEffect(() => {
     const fetchPizzas = async () => {
-      setIsLoading(true); // Inicia la carga
+      setIsLoading(true);
       await getPizzas();
-      setIsLoading(false); // Termina la carga
+      setIsLoading(false);
+      setSelectedPizzas(pizzas);
     };
 
     fetchPizzas();
   }, [])
 
+
   useEffect(() => {
     getPizzas()
   }, [])
+
+  useEffect(() => {
+    setSelectedPizzas(
+      pizzas.filter(pizza =>
+        pizza.piz_name.toLowerCase().includes(searchValue.toLowerCase())
+      )
+    );
+  }, [searchValue, pizzas])
+
 
   const updateState = async (pizza) => {
     const updatedPizza = {
@@ -32,9 +45,7 @@ function PizzaPage() {
       piz_state: !pizza.piz_state,
       ingredients: pizza.ingredients.map(({ ing_id, pi_portion }) => ({ ing_id, pi_portion }))
     };
-
     await updatePizza(updatedPizza);
-
     getPizzas();
   }
 
@@ -45,7 +56,7 @@ function PizzaPage() {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = pizzas.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = selectedPizzas.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <>
@@ -54,11 +65,17 @@ function PizzaPage() {
         <div>
           <div className="btn-search">
             <button className="btn btn-crear"
-              onClick={() => navigate('/pizza-add')}
+              onClick={() => {
+                setPizzas([])
+                navigate('/pizza-add')
+              }}
             >
               <i className="fas fa-pencil-alt"></i> Registrar
             </button>
-            <input className="form-control search-bar" type="search" placeholder="Buscar pizza..." />
+            <input className="form-control search-bar" type="search" placeholder="Buscar pizza..." 
+              value={searchValue}
+              onChange={ e => setSearchValue(e.target.value)}
+            />
           </div>
 
           {isLoading ? (
@@ -113,17 +130,23 @@ function PizzaPage() {
 
           <div className="btn-search">
             <div>
-              <h5>Mostrando {indexOfFirstItem + 1} - {indexOfLastItem > pizzas.length ? pizzas.length : indexOfLastItem} de {pizzas.length} resultados</h5>
+              <h5>
+                {selectedPizzas.length > 0 ?
+                  `Mostrando ${indexOfFirstItem + 1} - ${indexOfLastItem > selectedPizzas.length ? selectedPizzas.length : indexOfLastItem} de ${selectedPizzas.length} resultados`
+                  :
+                  'No se encontraron resultados'
+                }
+              </h5>
             </div>
             <div>
               <button className="btn btn-paginate" onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
                 <i className="fas fa-arrow-left"></i> Anterior
               </button>
-              <button className="btn btn-paginate" onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === Math.ceil(pizzas.length / itemsPerPage)}>
+              <button className="btn btn-paginate" onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage >= Math.ceil(selectedPizzas.length / itemsPerPage)}>
                 Siguiente <i className="fas fa-arrow-right"></i>
               </button>
-
             </div>
+
           </div>
         </div>
       </div>

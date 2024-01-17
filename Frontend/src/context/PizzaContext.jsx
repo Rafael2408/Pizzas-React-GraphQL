@@ -112,7 +112,8 @@ export const PizzaProvider = ({ children }) => {
     return (
         <PizzaContext.Provider 
             value={{ 
-                pizzas, 
+                pizzas,
+                setPizzas, 
                 getPizzas,
                 getPizzaById,
                 createPizza,

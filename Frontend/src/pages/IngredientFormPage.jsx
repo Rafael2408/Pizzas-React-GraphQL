@@ -29,9 +29,6 @@ function IngredientFormPage() {
     }
   }, [ingredients]);
 
-  console.log(errors)
-
-
   const onSubmit = handleSubmit(async (data) => {
     data.ing_calories = parseFloat(data.ing_calories)
     if (params.id) {

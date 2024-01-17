@@ -108,15 +108,23 @@ function IngredientPage() {
                     </div>
                     <div className="btn-search">
                         <div>
-                            <h5>Mostrando {indexOfFirstItem + 1} - {indexOfLastItem > ingredients.length ? ingredients.length : indexOfLastItem} de {ingredients.length} resultados</h5>
+                            <h5>
+                                {filteredIngredients.length > 0 ?
+                                    `Mostrando ${indexOfFirstItem + 1} - ${indexOfLastItem > filteredIngredients.length ? filteredIngredients.length : indexOfLastItem} de ${filteredIngredients.length} resultados`
+                                    :
+                                    'No se encontraron resultados'
+                                }
+                            </h5>
+
                         </div>
                         <div>
                             <button className="btn btn-paginate" onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
                                 <i className="fas fa-arrow-left"></i> Anterior
                             </button>
-                            <button className="btn btn-paginate" onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === Math.ceil(ingredients.length / itemsPerPage)}>
+                            <button className="btn btn-paginate" onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage >= Math.ceil(filteredIngredients.length / itemsPerPage)}>
                                 Siguiente <i className="fas fa-arrow-right"></i>
                             </button>
+
 
                         </div>
                     </div>
