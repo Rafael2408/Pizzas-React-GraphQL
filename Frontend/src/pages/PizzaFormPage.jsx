@@ -100,7 +100,7 @@ function PizzaFormPage() {
 
     return (
         <>
-            <div className="d-flex flex-column justify-content-center align-items-center"
+            <div className="d-flex flex-column align-items-center mt-5"
                 style={{ height: "100vh" }}>
                 <div className='col-6' id='pizzaForm'>
                     <h1>Formulario de Pizzas</h1>
@@ -194,6 +194,45 @@ function PizzaFormPage() {
                                 </tbody>
                             </table>
                         )}
+
+                        {showIngredients && (
+                            <div className='cards d-flex flex-wrap'>
+                                {ingredients.map((ingredient, index) => (
+                                    <div key={index} className='card text-bg-light mb-3'>
+                                        <div className='card-header'>{ingredient.ing_name}</div>
+                                        <div className='card-body'>
+                                                <div className='d-flex '>
+                                                <span style={{ marginRight: '0.5rem' }}>Seleccionar: </span>
+                                                    <div className='form-check form-switch d-flex justify-content-center'>
+                                                        <input type="checkbox"
+                                                            className='form-check-input'
+                                                            {...register(`ingredients[${index}].ing_id`)}
+                                                            value={ingredient.ing_id}
+                                                            defaultChecked={selectedIngredients[index]}
+                                                            onChange={e => handleCheckboxChange(index, e.target.checked)}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            <p className='card-text'>Calorías: {ingredient.ing_calories}</p>
+                                            <input type="text" placeholder='Porción..' className='form-control'
+                                                {...register(`ingredients[${index}].pi_portion`, {
+                                                    required: selectedIngredients[index],
+                                                    pattern: {
+                                                        value: /^\d+(\.\d{1,2})?$/,
+                                                        message: 'Por favor ingresa un número válido'
+                                                    }
+                                                })}
+                                                disabled={!selectedIngredients[index]}
+                                            />
+                                            {errors.ingredients && errors.ingredients[index] && errors.ingredients[index].pi_portion && (
+                                                <span className='text-danger'>{errors.ingredients[index].pi_portion.message}</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
 
                         <div className='separar-elementos'>
                             <button type="submit" className="btn btn-guardar">

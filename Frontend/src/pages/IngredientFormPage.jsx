@@ -43,10 +43,10 @@ function IngredientFormPage() {
   });
 
   return (
-    <div className="d-flex flex-column justify-content-center align-items-center"
+    <div className="d-flex flex-column align-items-center mt-5"
       style={{ height: "100vh" }}>
       <div className='col-6' id='ingredientForm'>
-        <h1>Formulario de Ingredientes</h1>
+        <h1 className='text-center'>Formulario de Ingredientes</h1>
         <form onSubmit={onSubmit}>
           {params.id && ingredients && ingredients.length > 0 && (
             <h4 className='mt-3 mb-4'>ID del ingrediente: <b>{ingredients[0].ing_id}</b></h4>

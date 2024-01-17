@@ -1,13 +1,11 @@
+import '../styles/PizzaPage.css'
 import { useContext, useEffect, useState } from "react"
 import { PizzaContext } from "../context/PizzaContext"
-import { useForm } from 'react-hook-form'
 import { useNavigate } from "react-router-dom"
 
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import * as XLSX from 'xlsx';
-
-import '../styles/PizzaPage.css'
 
 function PizzaPage() {
   const navigate = useNavigate()
@@ -86,6 +84,8 @@ function PizzaPage() {
       tableRows.push(pizzaData);
     });
 
+    console.log(tableRows)
+
     doc.autoTable({
       columns: tableColumn.map(header => ({ header })),
       body: tableRows
@@ -136,7 +136,8 @@ function PizzaPage() {
                   navigate('/pizza-add')
                 }}
               >
-                <i className="fas fa-pencil-alt"></i> Registrar
+                <i className="fas fa-pencil-alt mx-2"></i> 
+                <span className="button-text">Registrar</span>
               </button>
 
               <select className="form-select" onChange={(e) => setExportOption(e.target.value)}>
@@ -146,7 +147,8 @@ function PizzaPage() {
                 <option value="json">Exportar a JSON</option>
               </select>
               <button className="btn btn-info mx-2" onClick={handleExport}>
-                <i className="fas fa-download"></i> Exportar
+                <i className="fas fa-download mx-2"></i> 
+                <span className="button-text">Exportar</span>
               </button>
             </div>
             <input className="form-control search-bar" type="search" placeholder="Buscar pizza..." 
@@ -205,9 +207,43 @@ function PizzaPage() {
           )
           }
 
+          <div className="cards d-flex flex-wrap">
+            {currentItems && currentItems.map((pizza) => (
+              <div key={pizza.piz_id} className="card text-bg-light mb-3">
+                <div className="card-header">{pizza.piz_id}</div>
+                <div className="card-body">
+                  <h5 className="card-title">{pizza.piz_name}</h5>
+                  <p className="card-text">Origen: {pizza.piz_origin}</p>
+                  <p className="card-text">Total de Calorías: {pizza.total_calories}</p>
+                  <div className="d-flex">
+                    <span style={{ marginRight: '0.5rem' }}>Estado:</span>
+                    <div className="form-check form-switch">
+                      <input className="form-check-input" type="checkbox" checked={pizza.piz_state}
+                        onChange={() => updateState(pizza)}
+                      />
+                    </div>
+                  </div>
+                  <div className="d-flex justify-content-center mt-2">
+                    <button className="btn btn-editar"
+                      onClick={() => navigate(`/pizza-add/${pizza.piz_id}`)}
+                    >
+                      <i className="fas fa-edit"></i>
+                    </button>
+                    <button className="btn btn-eliminar"
+                      onClick={() => handleDeletePizza(pizza.piz_id)}
+                    >
+                      <i className="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+
           <div className="btn-search">
             <div>
-              <h5>
+              <h5 className="text-center">
                 {selectedPizzas.length > 0 ?
                   `Mostrando ${indexOfFirstItem + 1} - ${indexOfLastItem > selectedPizzas.length ? selectedPizzas.length : indexOfLastItem} de ${selectedPizzas.length} resultados`
                   :
@@ -215,7 +251,7 @@ function PizzaPage() {
                 }
               </h5>
             </div>
-            <div>
+            <div className="text-center">
               <button className="btn btn-paginate" onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
                 <i className="fas fa-arrow-left"></i> Anterior
               </button>
@@ -223,8 +259,8 @@ function PizzaPage() {
                 Siguiente <i className="fas fa-arrow-right"></i>
               </button>
             </div>
-
           </div>
+
         </div>
       </div>
     </>
