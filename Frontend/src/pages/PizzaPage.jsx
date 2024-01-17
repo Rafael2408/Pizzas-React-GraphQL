@@ -3,6 +3,10 @@ import { PizzaContext } from "../context/PizzaContext"
 import { useForm } from 'react-hook-form'
 import { useNavigate } from "react-router-dom"
 
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+
 import '../styles/PizzaPage.css'
 
 function PizzaPage() {
@@ -13,6 +17,7 @@ function PizzaPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchValue, setSearchValue] = useState('')
   const [selectedPizzas, setSelectedPizzas] = useState([])
+  const [exportOption, setExportOption] = useState('')
 
   useEffect(() => {
     const fetchPizzas = async () => {
@@ -58,20 +63,92 @@ function PizzaPage() {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = selectedPizzas.slice(indexOfFirstItem, indexOfLastItem);
 
+  const exportToExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(pizzas);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+    XLSX.writeFile(wb, "pizzas.xlsx");
+  };
+
+  const exportToPdf = () => {
+    const doc = new jsPDF();
+    const tableColumn = ["ID", "Nombre", "Origen", "Estado", "Calorías Totales"];
+    const tableRows = [];
+
+    pizzas.forEach(pizza => {
+      const pizzaData = [
+        pizza.piz_id,
+        pizza.piz_name,
+        pizza.piz_origin,
+        pizza.piz_state,
+        pizza.total_calories,
+      ];
+      tableRows.push(pizzaData);
+    });
+
+    doc.autoTable({
+      columns: tableColumn.map(header => ({ header })),
+      body: tableRows
+    });
+    doc.save('pizzas.pdf');
+  };
+
+  const exportToJson = () => {
+    const dataStr = JSON.stringify(pizzas, null, 4);
+    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+
+    let exportFileDefaultName = 'pizzas.json';
+
+    let linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  }
+
+  const handleExport = () => {
+    switch (exportOption) {
+      case 'excel':
+        exportToExcel();
+        break;
+      case 'pdf':
+        exportToPdf();
+        break;
+      case 'json':
+        exportToJson();
+        break;
+      default:
+        alert('Selecciona una opción para exportar')
+        break;
+    }
+  };
+
+
   return (
     <>
       <div className="m-4">
         <h1 className="text-center">Administración de Pizzas</h1>
         <div>
           <div className="btn-search">
-            <button className="btn btn-crear"
-              onClick={() => {
-                setPizzas([])
-                navigate('/pizza-add')
-              }}
-            >
-              <i className="fas fa-pencil-alt"></i> Registrar
-            </button>
+            <div className="admin-options">
+              <button className="btn btn-crear btn-primary"
+                onClick={() => {
+                  setPizzas([])
+                  navigate('/pizza-add')
+                }}
+              >
+                <i className="fas fa-pencil-alt"></i> Registrar
+              </button>
+
+              <select className="form-select" onChange={(e) => setExportOption(e.target.value)}>
+                <option value="">Opciones de Exportación</option>
+                <option value="excel">Exportar a Excel</option>
+                <option value="pdf">Exportar a PDF</option>
+                <option value="json">Exportar a JSON</option>
+              </select>
+              <button className="btn btn-info mx-2" onClick={handleExport}>
+                <i className="fas fa-download"></i> Exportar
+              </button>
+            </div>
             <input className="form-control search-bar" type="search" placeholder="Buscar pizza..." 
               value={searchValue}
               onChange={ e => setSearchValue(e.target.value)}
@@ -82,7 +159,7 @@ function PizzaPage() {
             <p>Cargando pizzas...</p>
           ) : (
             <div className="table-responsive">
-              <table className="table table-striped">
+              <table className="table table-striped" id="my-table">
                 <thead>
                   <tr>
                     <th className="text-center">ID</th>

@@ -11,7 +11,8 @@
 
 .btn-crear{
     background-color: #3171e7;
-    width: 130px;
+    width: 180px;
+    margin-right: 10px;
 }
 
 .search-bar{
@@ -120,4 +121,12 @@
 label{
     font-weight: bold;
     font-size: 110%;
+}
+
+.admin-options{
+    display: flex;
+}
+
+.form-select{
+    width: 240px;
 }
