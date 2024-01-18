@@ -195,7 +195,7 @@ function PizzaFormPage() {
                             </table>
                         )}
 
-                        {showIngredients && (
+                        {/* {showIngredients && (
                             <div className='cards d-flex flex-wrap'>
                                 {ingredients.map((ingredient, index) => (
                                     <div key={index} className='card text-bg-light mb-3'>
@@ -231,8 +231,7 @@ function PizzaFormPage() {
                                     </div>
                                 ))}
                             </div>
-                        )}
-
+                        )} */}
 
                         <div className='separar-elementos'>
                             <button type="submit" className="btn btn-guardar">

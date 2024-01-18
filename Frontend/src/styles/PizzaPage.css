@@ -175,7 +175,7 @@ label{
         display: none;
     }
 
-    .table {
+    #my-table {
         display: none;
     }
 
@@ -210,9 +210,9 @@ label{
     }
 
     /* También puedes ajustar los estilos de la tabla para que se vea mejor en pantallas pequeñas */
-    .table {
+    #my-table {
         display: none;
         overflow-x: auto;
         white-space: nowrap;
-    }
+    } 
 }

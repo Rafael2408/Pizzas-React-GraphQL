@@ -142,7 +142,7 @@ function IngredientPage() {
                     </div>
 
                     <div className="table-responsive">
-                        <table className="table table-striped">
+                        <table className="table table-striped" id="my-table">
                             <thead>
                                 <tr>
                                     <th className="text-center">ID</th>
