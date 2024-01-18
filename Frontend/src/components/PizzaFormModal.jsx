@@ -22,7 +22,7 @@ function PizzaFormModal({ isOpen, onClose, pizza }) {
 
   return (
     <Modal
-      isOpen={isOpen || isClosing} // Mantén el modal en el DOM durante la animación de cierre
+      isOpen={isOpen || isClosing} 
       onRequestClose={handleClose}
       className={isClosing ? 'fade-out modal-content' : 'fade-in modal-content'}
       overlayClassName='modal-overlay'

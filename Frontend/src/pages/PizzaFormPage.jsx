@@ -107,7 +107,7 @@ function PizzaFormPage({ onClose, pizza }) {
         else {
             await createPizza(data)
         }
-        await onClose();
+        await onClose()
     });
 
 

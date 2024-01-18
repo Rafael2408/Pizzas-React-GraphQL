@@ -1,45 +1,29 @@
 import { useEffect, useState } from 'react';
 import { usePizzas } from '../context/PizzaContext';
 import { useForm } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router-dom';
 
-function IngredientFormPage() {
-  const navigate = useNavigate()
-  const params = useParams()
-
+function IngredientFormPage({ onClose, ingredient }) {
   const { register, handleSubmit, setValue, formState: { errors } } = useForm();
-  const { ingredients = [], createIngredient, updateIngredient, getIngredientById } = usePizzas() // Asegúrate de tener estas funciones en tu contexto
+  const { ingredients = [], createIngredient, updateIngredient } = usePizzas()
 
   useEffect(() => {
-    if (params.id) {
-      getIngredientById(params.id)
+    if (ingredient) {
+      setValue('ing_name', ingredient.ing_name);
+      setValue('ing_calories', ingredient.ing_calories);
     }
-  }, [])
-
-  useEffect(() => {
-    if (ingredients && ingredients.length > 0 && params.id) {
-      const ingredient = ingredients.find(ingredient => ingredient.ing_id === parseInt(params.id));
-
-      if (ingredient) {
-        setValue('ing_name', ingredient.ing_name);
-        if (ingredient && ingredient.ing_calories) {
-          setValue('ing_calories', ingredient.ing_calories);
-        }
-      }
-    }
-  }, [ingredients]);
+  }, [ingredient]);
 
   const onSubmit = handleSubmit(async (data) => {
     data.ing_calories = parseFloat(data.ing_calories)
-    if (params.id) {
-      data.ing_id = parseInt(params.id)
+    if (ingredient) {
+      data.ing_id = parseInt(ingredient.ing_id)
       data.ing_state = true;
       await updateIngredient(data)
     }
     else {
       await createIngredient(data)
     }
-    navigate('/ingredient')
+    await onClose()
   });
 
   return (
@@ -48,14 +32,14 @@ function IngredientFormPage() {
       <div className='col-6' id='ingredientForm'>
         <h1 className='text-center'>Formulario de Ingredientes</h1>
         <form onSubmit={onSubmit}>
-          {params.id && ingredients && ingredients.length > 0 && (
-            <h4 className='mt-3 mb-4'>ID del ingrediente: <b>{ingredients[0].ing_id}</b></h4>
+          {ingredient && (
+            <h4 className='mt-3 mb-4'>ID del ingrediente: <b>{ingredient.ing_id}</b></h4>
           )}
 
           <div className='mb-3'>
             <label>Nombre del ingrediente:</label>
             <input type="text" placeholder='Nombre del ingrediente...' className='form-control'
-              {...register('ing_name', { 
+              {...register('ing_name', {
                 required: 'El nombre es requerido',
                 minLength: { value: 3, message: 'El nombre debe tener al menos 3 caracteres' }
               })}
@@ -70,7 +54,7 @@ function IngredientFormPage() {
               {...register('ing_calories', {
                 required: 'Las calorías son requeridas',
                 pattern: {
-                  value: /^\d+(\.\d{1,2})?$/, 
+                  value: /^\d+(\.\d{1,2})?$/,
                   message: 'Por favor ingresa un número válido'
                 }
               })}
@@ -86,7 +70,7 @@ function IngredientFormPage() {
               <i className="fas fa-save"></i> Guardar
             </button>
             <button type="button" className="btn btn-danger"
-              onClick={() => navigate('/ingredient')}
+              onClick={onClose}
             >
               <i className="fas fa-undo"></i> Cancelar
             </button>

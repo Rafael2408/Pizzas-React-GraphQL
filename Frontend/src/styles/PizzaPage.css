@@ -64,6 +64,7 @@
     border-radius: 10px;
     height: 50%;
     overflow-y: auto;
+    margin-top: 11.5%;
 }
 
 #pizzaForm form{

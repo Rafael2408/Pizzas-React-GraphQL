@@ -1,6 +1,8 @@
 import { useContext, useEffect, useState } from "react"
 import { PizzaContext } from "../context/PizzaContext"
 import { useNavigate } from "react-router-dom"
+import IngredientFormModal from "../components/IngredientFormModal";
+
 
 import jsPDF from 'jspdf';
 import autoTable from "jspdf-autotable";
@@ -9,12 +11,24 @@ import * as XLSX from 'xlsx';
 function IngredientPage() {
     const navigate = useNavigate()
     const { ingredients, getIngredients, updateIngredient, deleteIngredient } = useContext(PizzaContext)
+    const [ingredientToUpdate, setIngredientToUpdate] = useState(null)
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage,] = useState(5);
-
+    const [isLoading, setIsLoading] = useState(false);
     const [searchValue, setSearchValue] = useState("");
     const [filteredIngredients, setFilteredIngredients] = useState([]);
     const [exportOption, setExportOption] = useState('')
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+
+    useEffect(() => {
+        const fetchIngredients = async () => {
+            setIsLoading(true);
+            await getIngredients();
+            setIsLoading(false);
+        };
+
+        fetchIngredients();
+    }, [])
 
     const handleStateChange = async (ingredient) => {
         const updatedIngredient = {
@@ -31,10 +45,6 @@ function IngredientPage() {
         await deleteIngredient(parseInt(ing_id))
         await getIngredients()
     }
-
-    useEffect(() => {
-        getIngredients()
-    }, [])
 
     useEffect(() => {
         setFilteredIngredients(
@@ -69,8 +79,6 @@ function IngredientPage() {
             ];
             tableRows.push(ingredientData);
         });
-
-        console.log(tableRows)
 
         doc.autoTable({
             columns: tableColumn.map(header => ({ header })),
@@ -108,6 +116,19 @@ function IngredientPage() {
         }
     };
 
+    const openModal = () => {
+        setModalIsOpen(true);
+    }
+
+    const closeModal = () => {
+        setModalIsOpen(false);
+        setTimeout(async () => {
+            setIsLoading(false)
+            await getIngredients()
+        }, 0);
+    }
+
+
     return (
         <>
             <div className="m-4">
@@ -117,12 +138,14 @@ function IngredientPage() {
                         <div className="admin-options">
                             <button className="btn btn-crear btn-primary"
                                 onClick={() => {
-                                    navigate('/ingredient-add')
+                                    setIngredientToUpdate(null)
+                                    openModal()
                                 }}
                             >
                                 <i className="fas fa-pencil-alt mx-2"></i> 
                                 <span className="button-text">Registrar</span>
                             </button>
+                            <IngredientFormModal isOpen={modalIsOpen} onClose={closeModal} ingredient={ingredientToUpdate}/>
 
                             <select className="form-select" onChange={(e) => setExportOption(e.target.value)}>
                                 <option value="">Opciones de Exportación</option>
@@ -141,45 +164,56 @@ function IngredientPage() {
                         />
                     </div>
 
-                    <div className="table-responsive">
-                        <table className="table table-striped" id="my-table">
-                            <thead>
-                                <tr>
-                                    <th className="text-center">ID</th>
-                                    <th className="text-center">Nombre</th>
-                                    <th className="text-center">Calorías</th>
-                                    <th className="text-center">Estado</th>
-                                    <th className="text-center" colSpan={2}> Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {currentItems && currentItems.map((ingredient) => (
-                                    <tr key={ingredient.ing_id}>
-                                        <td className="text-center">{ingredient.ing_id}</td>
-                                        <td className="text-center">{ingredient.ing_name}</td>
-                                        <td className="text-center">{ingredient.ing_calories}</td>
-                                        <td className="text-center">
-                                            <div className="form-check form-switch d-flex justify-content-center">
-                                                <input className="form-check-input" type="checkbox" checked={ingredient.ing_state} onChange={() => handleStateChange(ingredient)} />
-                                            </div>
-                                        </td>
-                                        <td className="text-center">
-                                            <button className="btn btn-editar"
-                                                onClick={() => navigate(`/ingredient-add/${ingredient.ing_id}`)}
-                                            >
-                                                <i className="fas fa-edit"></i>
-                                            </button>
-                                            <button className="btn btn-eliminar"
-                                                onClick={() => handleDeleteIngredient(ingredient.ing_id)}
-                                            >
-                                                <i className="fas fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    {isLoading ? (
+                        <div className="d-flex justify-content-center">
+                            <div className="spinner-border" role="status">
+                                <span className="visually-hidden">Cargando ingredientes...</span>
+                            </div>
+                        </div>
+                    ) : (
+                            <div className="table-responsive">
+                                <table className="table table-striped" id="my-table">
+                                    <thead>
+                                        <tr>
+                                            <th className="text-center">ID</th>
+                                            <th className="text-center">Nombre</th>
+                                            <th className="text-center">Calorías</th>
+                                            <th className="text-center">Estado</th>
+                                            <th className="text-center" colSpan={2}> Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {currentItems && currentItems.map((ingredient) => (
+                                            <tr key={ingredient.ing_id}>
+                                                <td className="text-center">{ingredient.ing_id}</td>
+                                                <td className="text-center">{ingredient.ing_name}</td>
+                                                <td className="text-center">{ingredient.ing_calories}</td>
+                                                <td className="text-center">
+                                                    <div className="form-check form-switch d-flex justify-content-center">
+                                                        <input className="form-check-input" type="checkbox" checked={ingredient.ing_state} onChange={() => handleStateChange(ingredient)} />
+                                                    </div>
+                                                </td>
+                                                <td className="text-center">
+                                                    <button className="btn btn-editar"
+                                                        onClick={() => {
+                                                            setIngredientToUpdate(ingredient)
+                                                            openModal()
+                                                        }}
+                                                    >
+                                                        <i className="fas fa-edit"></i>
+                                                    </button>
+                                                    <button className="btn btn-eliminar"
+                                                        onClick={() => handleDeleteIngredient(ingredient.ing_id)}
+                                                    >
+                                                        <i className="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
 
                     <div className="cards d-flex flex-wrap">
                         {currentItems && currentItems.map((ingredient) => (
@@ -198,7 +232,10 @@ function IngredientPage() {
                                     </div>
                                     <div className="d-flex justify-content-center mt-2">
                                         <button className="btn btn-editar"
-                                            onClick={() => navigate(`/ingredient-add/${ingredient.ing_id}`)}
+                                            onClick={() =>{
+                                                setIngredientToUpdate(ingredient)
+                                                openModal()
+                                            }}
                                         >
                                             <i className="fas fa-edit"></i>
                                         </button>

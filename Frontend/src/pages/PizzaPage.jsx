@@ -2,7 +2,6 @@ import '../styles/PizzaPage.css'
 import { useContext, useEffect, useState } from "react"
 import { PizzaContext } from "../context/PizzaContext"
 import { useNavigate } from "react-router-dom"
-import Modal from 'react-modal'
 import PizzaFormModal from '../components/PizzaFormModal';
 
 import jsPDF from "jspdf";
@@ -10,8 +9,7 @@ import autoTable from "jspdf-autotable";
 import * as XLSX from 'xlsx';
 
 function PizzaPage() {
-  const navigate = useNavigate()
-  const { pizzas, setPizzas, getPizzas, updatePizza, deletePizza } = useContext(PizzaContext)
+  const { pizzas, getPizzas, updatePizza, deletePizza } = useContext(PizzaContext)
   const [pizzaToUpdate, setPizzaToUpdate] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage,] = useState(5); 
@@ -30,11 +28,6 @@ function PizzaPage() {
     };
 
     fetchPizzas();
-  }, [])
-
-
-  useEffect(() => {
-    getPizzas()
   }, [])
 
   useEffect(() => {
@@ -144,15 +137,14 @@ function PizzaPage() {
             <div className="admin-options">
               <button className="btn btn-crear btn-primary"
                 onClick={() => {
-                  setPizzas([])
-                  setIsLoading(true)
+                  setPizzaToUpdate(null)
                   openModal()
                 }}
               >
                 <i className="fas fa-pencil-alt mx-2"></i> 
                 <span className="button-text">Registrar</span>
               </button>
-              <PizzaFormModal isOpen = {modalIsOpen} onClose = {closeModal} />
+              <PizzaFormModal isOpen = {modalIsOpen} onClose = {closeModal} pizza = {pizzaToUpdate}/>
 
               <select className="form-select" onChange={(e) => setExportOption(e.target.value)}>
                 <option value="">Opciones de Exportación</option>
@@ -259,7 +251,6 @@ function PizzaPage() {
                 </div>
               </div>
             ))}
-            <PizzaFormModal isOpen={modalIsOpen} onClose={closeModal} pizza={pizzaToUpdate} />
           </div>
 
 
