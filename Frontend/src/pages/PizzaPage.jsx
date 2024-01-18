@@ -2,6 +2,8 @@ import '../styles/PizzaPage.css'
 import { useContext, useEffect, useState } from "react"
 import { PizzaContext } from "../context/PizzaContext"
 import { useNavigate } from "react-router-dom"
+import Modal from 'react-modal'
+import PizzaFormModal from '../components/PizzaFormModal';
 
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -10,12 +12,14 @@ import * as XLSX from 'xlsx';
 function PizzaPage() {
   const navigate = useNavigate()
   const { pizzas, setPizzas, getPizzas, updatePizza, deletePizza } = useContext(PizzaContext)
+  const [pizzaToUpdate, setPizzaToUpdate] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage,] = useState(5); 
   const [isLoading, setIsLoading] = useState(false);
   const [searchValue, setSearchValue] = useState('')
   const [selectedPizzas, setSelectedPizzas] = useState([])
   const [exportOption, setExportOption] = useState('')
+  const [modalIsOpen, setModalIsOpen] = useState(false)
 
   useEffect(() => {
     const fetchPizzas = async () => {
@@ -84,8 +88,6 @@ function PizzaPage() {
       tableRows.push(pizzaData);
     });
 
-    console.log(tableRows)
-
     doc.autoTable({
       columns: tableColumn.map(header => ({ header })),
       body: tableRows
@@ -122,6 +124,16 @@ function PizzaPage() {
     }
   };
 
+  function openModal() {
+    setModalIsOpen(true);
+  }
+
+  const closeModal = async() => {
+    setModalIsOpen(false);
+    setIsLoading(false)
+    await getPizzas()
+  }
+
 
   return (
     <>
@@ -133,12 +145,14 @@ function PizzaPage() {
               <button className="btn btn-crear btn-primary"
                 onClick={() => {
                   setPizzas([])
-                  navigate('/pizza-add')
+                  setIsLoading(true)
+                  openModal()
                 }}
               >
                 <i className="fas fa-pencil-alt mx-2"></i> 
                 <span className="button-text">Registrar</span>
               </button>
+              <PizzaFormModal isOpen = {modalIsOpen} onClose = {closeModal} />
 
               <select className="form-select" onChange={(e) => setExportOption(e.target.value)}>
                 <option value="">Opciones de Exportación</option>
@@ -186,7 +200,10 @@ function PizzaPage() {
                       <td className="text-center">{pizza.total_calories}</td>
                       <td className="text-center">
                         <button className="btn btn-editar"
-                          onClick={() => navigate(`/pizza-add/${pizza.piz_id}`)}
+                          onClick={() => {
+                            setPizzaToUpdate(pizza);
+                            openModal();
+                          }}
                         >
                           <i className="fas fa-edit"></i>
                         </button>
@@ -225,10 +242,14 @@ function PizzaPage() {
                   </div>
                   <div className="d-flex justify-content-center mt-2">
                     <button className="btn btn-editar"
-                      onClick={() => navigate(`/pizza-add/${pizza.piz_id}`)}
+                      onClick={() => {
+                        setPizzaToUpdate(pizza);
+                        openModal();
+                      }}
                     >
                       <i className="fas fa-edit"></i>
                     </button>
+
                     <button className="btn btn-eliminar"
                       onClick={() => handleDeletePizza(pizza.piz_id)}
                     >
@@ -238,6 +259,7 @@ function PizzaPage() {
                 </div>
               </div>
             ))}
+            <PizzaFormModal isOpen={modalIsOpen} onClose={closeModal} pizza={pizzaToUpdate} />
           </div>
 
 
