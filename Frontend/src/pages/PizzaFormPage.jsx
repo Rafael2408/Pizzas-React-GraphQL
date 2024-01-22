@@ -49,6 +49,7 @@ function PizzaFormPage({ onClose, pizza }) {
 
     useEffect(() => {
         getIngredients()
+        
     }, [])
 
     const updateSelectedIngredients = () => {

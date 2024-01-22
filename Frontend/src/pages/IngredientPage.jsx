@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react"
 import { PizzaContext } from "../context/PizzaContext"
 import { useNavigate } from "react-router-dom"
 import IngredientFormModal from "../components/IngredientFormModal";
-
+import Swal from 'sweetalert2'
 
 import jsPDF from 'jspdf';
 import autoTable from "jspdf-autotable";
@@ -41,14 +41,20 @@ function IngredientPage() {
     }
 
     const handleDeleteIngredient = async (ing_id) => {
-        if (window.confirm("¿Estás seguro de que quieres eliminar este ingrediente?")) {
+        const result = await Swal.fire({
+            title: '¿Estás seguro de que quieres eliminar este ingrediente?',
+            showCancelButton: true,
+            confirmButtonText: `Eliminar`,
+            confirmButtonColor: '#ff7f7f'
+        })
+
+        if (result.isConfirmed) {
             setIsLoading(true)
             await deleteIngredient(parseInt(ing_id))
             await getIngredients()
             setIsLoading(false)
         }
     }
-
 
     useEffect(() => {
         setFilteredIngredients(
@@ -245,12 +251,7 @@ function IngredientPage() {
                                             <i className="fas fa-edit"></i>
                                         </button>
                                         <button className="btn btn-eliminar"
-                                            onClick={() => {
-                                                if (window.confirm('¿Estás seguro de que quieres eliminar este ingrediente?')) {
-                                                    console.log(ingredient)
-                                                    handleDeleteIngredient(ingredient.ing_id);
-                                                }
-                                            }}
+                                            onClick={() => handleDeleteIngredient(ingredient.ing_id)}
                                         >
                                             <i className="fas fa-trash"></i>
                                         </button>
