@@ -41,10 +41,14 @@ function IngredientPage() {
     }
 
     const handleDeleteIngredient = async (ing_id) => {
-        console.log(ing_id)
-        await deleteIngredient(parseInt(ing_id))
-        await getIngredients()
+        if (window.confirm("¿Estás seguro de que quieres eliminar este ingrediente?")) {
+            setIsLoading(true)
+            await deleteIngredient(parseInt(ing_id))
+            await getIngredients()
+            setIsLoading(false)
+        }
     }
+
 
     useEffect(() => {
         setFilteredIngredients(
@@ -115,6 +119,7 @@ function IngredientPage() {
                 break;
         }
     };
+
 
     const openModal = () => {
         setModalIsOpen(true);
@@ -242,6 +247,7 @@ function IngredientPage() {
                                         <button className="btn btn-eliminar"
                                             onClick={() => {
                                                 if (window.confirm('¿Estás seguro de que quieres eliminar este ingrediente?')) {
+                                                    console.log(ingredient)
                                                     handleDeleteIngredient(ingredient.ing_id);
                                                 }
                                             }}

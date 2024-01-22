@@ -50,8 +50,12 @@ function PizzaPage() {
   }
 
   const handleDeletePizza = async (piz_id) => {
-    await deletePizza(parseInt(piz_id))
-    getPizzas()
+    if (window.confirm("¿Estás seguro de que quieres eliminar esta pizza?")) {
+      setIsLoading(true)
+      await deletePizza(parseInt(piz_id))
+      await getPizzas()
+      setIsLoading(false)
+    }
   }
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -164,7 +168,11 @@ function PizzaPage() {
           </div>
 
           {isLoading ? (
-            <p>Cargando pizzas...</p>
+            <div className="d-flex justify-content-center">
+              <div className="spinner-border" role="status">
+                <span className="visually-hidden">Cargando pizzas...</span>
+              </div>
+            </div>
           ) : (
             <div className="table-responsive">
               <table className="table table-striped" id="my-table">
