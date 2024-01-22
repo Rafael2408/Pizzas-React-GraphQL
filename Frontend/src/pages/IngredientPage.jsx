@@ -240,7 +240,11 @@ function IngredientPage() {
                                             <i className="fas fa-edit"></i>
                                         </button>
                                         <button className="btn btn-eliminar"
-                                            onClick={() => handleDeleteIngredient(ingredient.ing_id)}
+                                            onClick={() => {
+                                                if (window.confirm('¿Estás seguro de que quieres eliminar este ingrediente?')) {
+                                                    handleDeleteIngredient(ingredient.ing_id);
+                                                }
+                                            }}
                                         >
                                             <i className="fas fa-trash"></i>
                                         </button>

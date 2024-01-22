@@ -243,10 +243,15 @@ function PizzaPage() {
                     </button>
 
                     <button className="btn btn-eliminar"
-                      onClick={() => handleDeletePizza(pizza.piz_id)}
+                      onClick={() => {
+                        if (window.confirm('¿Estás seguro de que quieres eliminar esta pizza?')) {
+                          handleDeletePizza(pizza.piz_id);
+                        }
+                      }}
                     >
                       <i className="fas fa-trash"></i>
                     </button>
+
                   </div>
                 </div>
               </div>
