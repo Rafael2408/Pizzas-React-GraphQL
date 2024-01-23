@@ -5,10 +5,8 @@ import './styles/all.css';
 import { PizzaProvider } from './context/PizzaContext';
 import PizzaPage from './pages/PizzaPage';
 import HomePage from './pages/HomePage';
-import PizzaFormPage from './pages/PizzaFormPage';
 import IngredientPage from './pages/IngredientPage';
 import NavBar from './components/Navbar';
-import IngredientFormPage from './pages/IngredientFormPage';
 
 function App() {
   return (
